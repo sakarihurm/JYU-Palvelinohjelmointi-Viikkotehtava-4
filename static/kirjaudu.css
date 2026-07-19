@@ -1,0 +1,52 @@
+
+form {
+	display: flex;
+	flex-direction: column;
+	border: solid black 1px;
+	width: 20%;
+	background-color: white;
+}
+
+.navbar {
+	background-color: #1e95ed;
+	width: 100%;
+	height: 2em;
+	font-weight: bold;
+	color: white;
+	display: flex;
+	justify-content: space-between;
+  align-items: center;
+}
+.navbar a {
+	margin-left: 0.5em;
+	margin-right: 0.5em;
+  color: white;
+}
+
+label {
+	display: flex;
+	flex-direction: column;
+	margin-top: 0.5em;
+	width: 70%;
+	align-self: center;
+}
+#labels {
+	display: flex;
+	flex-direction: column;
+	font-weight: bold;
+	margin-top: 1em;
+}
+#kirjauduPainike {
+	text-align: center;
+}
+#kirjaudu_painike {
+	background-color: #1494ea;
+	color: white;
+	font-weight: bold;
+}
+.virhe {
+  color: #d32f2f;
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-align: center;
+}

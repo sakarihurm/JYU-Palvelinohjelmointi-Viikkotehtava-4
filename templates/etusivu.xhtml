@@ -2,13 +2,44 @@
 <html lang="fi" xmlns="http://www.w3.org/1999/xhtml" xml:lang="fi">
 <head>
 <meta charset="utf-8"/>
-<link rel="StyleSheet" href="static/vt4.css" type="text/css" />
+<link rel="StyleSheet" href="static/etusivu.css" type="text/css" />
 <title>TIES4080 - Viikkotehtävä 4 - 2026 kesä</title>
 </head>
 <body>
-<p>Käytä tätä pohjana eli säilytä sovelluksen kaikilla sivuilla ainakin sivuun linkitetyt validointiskriptit.</p>
+<nav class="navbar">
 
+    {% if kirjautunut %}
+    <a href="/joukkueet">{{ omistajan_nimi }}</a>    
+    {% endif %}
 
+    <a href="/" aria-current="page">Kilpailut</a>
+
+    {% if kirjautunut %}
+    <a href="/kirjaudu_ulos">Kirjaudu ulos</a>
+    {% else %}
+    <a href="/kirjaudu">Kirjaudu sisään</a>
+    {% endif %}
+
+</nav>
+
+<!-- <p>Käytä tätä pohjana eli säilytä ainakin sivuun linkitetyt validointiskriptit.</p> -->
+
+<div class="container">
+    <h1>Kilpailut</h1>
+    <form action="/">
+    <!-- <div id="labels">
+        <ul>
+            {% for id, nimi, alkuaika in kilpailut %}
+            <li><a href="{{ url_for('kilpailu', id=id, nimi=nimi, alkuaika=alkuaika) }}">{{nimi}}</a> - {{alkuaika}}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% if virhe %}
+    <span class="virhe">{{virhe}}</span>
+    {% endif %} -->
+    </form>
+
+</div>
 
 <!-- Tästä eteenpäin on vain apuvälineenä käytettäviä skriptejä -->
 <!-- HTMLinspectoria käytetään sivun live-muutosten automaattiseen validointiin. Kannattaa

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fi" xmlns="http://www.w3.org/1999/xhtml" xml:lang="fi">
+<head>
+<meta charset="utf-8"/>
+<link rel="StyleSheet" href="{{ url_for('static', filename='joukkueet.css') }}" type="text/css" />
+<title>TIES4080 - Viikkotehtävä 3 - 2025 kesä</title>
+</head>
+<body>
+
+<!-- täydennä lomaketta tarpeen mukaan. Älä kuitenkaan muuta kenttien nimiä -->
+<nav class="navbar">
+
+    {% if kirjautunut %}
+    <a href="/joukkueet">{{ omistajan_nimi }}</a>    
+    {% endif %}
+
+    <a href="/" aria-current="page">Kilpailut</a>
+
+    {% if kirjautunut %}
+    <a href="/kirjaudu_ulos">Kirjaudu ulos</a>
+    {% else %}
+    <a href="/kirjaudu">Kirjaudu sisään</a>
+    {% endif %}
+
+</nav>
+
+<div class="container">
+    <table>
+        <caption> {{kilpailun_nimi}} </caption>
+        <tbody>
+            <tr>
+                <th> Sarja </th>
+                <th> Joukkue </th>
+                <th> Jäsenet </th>
+            </tr>
+    {% for sid, nimi in suodatetut_sarjat %}
+        {% for jnimi, jasenet, sarja in joukkueet %}
+            {% if sid == sarja %}
+                <tr>
+                    <td>{{ nimi }}</td>
+                    <td>{{ jnimi }}</td>
+                    <td>
+                        <ul>
+                            {% for jasen in jasenet %}
+                            <li>{{ jasen }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+        </tbody>
+    </table>
+ </div>
+    
+<!-- Tästä eteenpäin on vain apuvälineenä käytettäviä skriptejä -->
+<!-- HTMLinspectoria käytetään sivun live-muutosten validointiin. Kannattaa
+vielä varmuuden vuoksi ajaa välillä myös W3C:n validaattori -->
+<script src="https://appro.mit.jyu.fi/tools/htmlinspector/html-inspector.js"></script>
+<!-- Sivun validoinnin W3C:n validaattorilla voit tehdä milloin tahansa näppäinyhdistelmällä CTRL+ALT+V -->
+<script src="https://appro.mit.jyu.fi/tools/validator/validator.user.js"></script>
+<script src="https://appro.mit.jyu.fi/tools/validator/xml-validator.js"></script>
+</body>
+</html>

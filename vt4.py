@@ -1,5 +1,6 @@
-from flask import Flask, url_for, session
-from flask import render_template, redirect
+from flask import Flask, request, Response, render_template, url_for, redirect, session
+import json, hashlib, sqlite3, secrets
+
 from authlib.integrations.flask_client import OAuth
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -23,7 +24,11 @@ oauth.register(
 @app.route('/')
 def homepage():
     user = session.get('user')
-    return render_template('home.html', user=user)
+    return Response(render_template("etusivu.xhtml", 
+                                    kilpailut=[], 
+                                    omistajan_nimi=user, 
+                                    kirjautunut=False), 
+                                    content_type="application/xhtml+xml; charset=utf-8")
 
 
 @app.route('/login')

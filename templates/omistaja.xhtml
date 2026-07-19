@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fi" xmlns="http://www.w3.org/1999/xhtml" xml:lang="fi">
+<head>
+<meta charset="utf-8"/>
+<link rel="StyleSheet" href="{{ url_for('static', filename='joukkueet.css') }}" type="text/css" />
+<title>TIES4080 - Viikkotehtävä 3 - 2025 kesä</title>
+</head>
+<body>
+
+<!-- täydennä lomaketta tarpeen mukaan. Älä kuitenkaan muuta kenttien nimiä -->
+<nav class="navbar">
+
+    {% if kirjautunut %}
+    <a href="/joukkueet">{{ omistajan_nimi }}</a>    
+    {% endif %}
+
+    <a href="/" aria-current="page">Kilpailut</a>
+
+    {% if kirjautunut %}
+    <a href="/kirjaudu_ulos">Kirjaudu ulos</a>
+    {% else %}
+    <a href="/kirjaudu">Kirjaudu sisään</a>
+    {% endif %}
+
+</nav>
+
+<p>{{ omistajan_nimi }}</p>
+<p>{{ omistajan_sposti }}</p>
+<div class="container">
+    <ul>
+        {% for kilpailu_id, kilpailu in kilpailut.items() %}
+        <li><a href="{{ url_for('kilpailu', id=kilpailu_id, nimi=kilpailu.nimi, alkuaika=kilpailu.alkuaika) }}">{{ kilpailu.nimi }}</a> {{ kilpailu.alkuaika }}
+            <ul>
+                {% for sarja, joukkueet in kilpailu.sarjat.items() %}
+                <li>{{ sarja }}
+                    <ul>
+                        {% for joukkue in joukkueet %}
+                        <li>{{ joukkue.nimi }}
+                            <ul>
+                                {% for jasen in joukkue.jasenet %}
+                                <li>{{ jasen }}</li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+ </div>
+<!-- Tästä eteenpäin on vain apuvälineenä käytettäviä skriptejä -->
+<!-- HTMLinspectoria käytetään sivun live-muutosten validointiin. Kannattaa
+vielä varmuuden vuoksi ajaa välillä myös W3C:n validaattori -->
+<script src="https://appro.mit.jyu.fi/tools/htmlinspector/html-inspector.js"></script>
+<!-- Sivun validoinnin W3C:n validaattorilla voit tehdä milloin tahansa näppäinyhdistelmällä CTRL+ALT+V -->
+<script src="https://appro.mit.jyu.fi/tools/validator/validator.user.js"></script>
+<script src="https://appro.mit.jyu.fi/tools/validator/xml-validator.js"></script>
+</body>
+</html>
