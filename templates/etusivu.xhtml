@@ -27,14 +27,14 @@
 <div class="container">
     <h1>Kilpailut</h1>
     <form action="/">
-    <!-- <div id="labels">
+    <div id="labels">
         <ul>
             {% for id, nimi, alkuaika in kilpailut %}
-            <li><a href="{{ url_for('kilpailu', id=id, nimi=nimi, alkuaika=alkuaika) }}">{{nimi}}</a> - {{alkuaika}}</li>
+            <li>{{nimi}} - {{alkuaika}}</li>
             {% endfor %}
         </ul>
     </div>
-    {% if virhe %}
+    <!-- {% if virhe %}
     <span class="virhe">{{virhe}}</span>
     {% endif %} -->
     </form>

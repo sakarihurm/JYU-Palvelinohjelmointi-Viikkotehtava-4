@@ -1,6 +1,6 @@
 from flask import Flask, request, Response, render_template, url_for, redirect, session
-import json, hashlib, sqlite3, secrets
-
+import json, hashlib, sqlite3, secrets, firebase_admin
+from firebase_admin import firestore, credentials
 from authlib.integrations.flask_client import OAuth
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -20,12 +20,27 @@ oauth.register(
     }
 )
 
+cred = credentials.Certificate(r'C:\Users\sakar\Desktop\palvelinohj\vt4\ties4080-ohjaus4-479214-58e499245f10.json')
+firebase_admin.initialize_app(cred)
+db = firestore.client()
 
 @app.route('/')
 def homepage():
     user = session.get('user')
+
+    kilpailut_stream = []
+
+    for doc in db.collection("kilpailut").stream():
+        kilpailu = doc.to_dict()
+        kilpailu["id"] = doc.id
+        kilpailut_stream.append(kilpailu)
+
+    kilpailut = []
+    for kilpailu in kilpailut_stream:
+        kilpailut.append((kilpailu["id"], kilpailu["nimi"], kilpailu["alkuaika"]))
+    
     return Response(render_template("etusivu.xhtml", 
-                                    kilpailut=[], 
+                                    kilpailut=kilpailut, 
                                     omistajan_nimi=user, 
                                     kirjautunut=False), 
                                     content_type="application/xhtml+xml; charset=utf-8")
