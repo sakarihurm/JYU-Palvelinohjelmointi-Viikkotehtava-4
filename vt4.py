@@ -41,8 +41,8 @@ def homepage():
     
     return Response(render_template("etusivu.xhtml", 
                                     kilpailut=kilpailut, 
-                                    omistajan_nimi=user, 
-                                    kirjautunut=False), 
+                                    omistajan_nimi=session.get('user_name'), 
+                                    kirjautunut=session.get('kirjautunut')), 
                                     content_type="application/xhtml+xml; charset=utf-8")
 
 
@@ -56,11 +56,15 @@ def login():
 def auth():
     token = oauth.google.authorize_access_token()
     session['user'] = token['userinfo']
+    print(session.get('user'))
     email = session['user']['email']
+    session['user_name'] = session['user']['given_name'] + " " + session['user']['family_name']
+    session['kirjautunut'] = True
     return redirect('/')
 
 
 @app.route('/logout')
 def logout():
     session.pop('user', None)
+    session['kirjautunut'] = False
     return redirect('/')
