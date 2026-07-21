@@ -46,6 +46,47 @@ def homepage():
                                     content_type="application/xhtml+xml; charset=utf-8")
 
 
+@app.route('/kilpailu', methods=['POST', 'GET'])
+def kilpailu():
+
+    # Otetaan talteen kilpailun id ja nimi
+    kilpailuid = int(request.values.get("id", 0))
+    kilpailun_nimi = request.values.get("nimi", "") + " " + request.values.get("alkuaika", "")
+
+    sarjat = [
+    doc.to_dict()
+    for doc in db.collection("sarjat")
+                .where("kilpailu", "==", 6050225628119040)
+                .stream()
+    ]
+
+    sarjat = sorted(sarjat, key=lambda x: x["nimi"].lower()) # Järjestetään sarjat nimen mukaan
+    
+    suodatetut_sarjat = []
+
+    for sarja in sarjat:
+        suodatetut_sarjat.append((sarja["sid"], sarja["nimi"]))
+    
+    joukkueet = [
+    doc.to_dict()
+    for doc in db.collection("joukkueet").stream()
+    ]
+
+    suodatetut_joukkueet = []
+    for joukkue in joukkueet:
+        suodatetut_joukkueet.append((joukkue["nimi"], 
+                                    sorted(joukkue["jasenet"]),
+                                    joukkue["sarja"]))
+        
+    return Response(render_template('joukkueet.xhtml', 
+                                    joukkueet=suodatetut_joukkueet, 
+                                    suodatetut_sarjat=suodatetut_sarjat, 
+                                    kilpailun_nimi=kilpailun_nimi, 
+                                    omistajan_nimi=session.get('user_name'), 
+                                    kirjautunut=session.get('kirjautunut')), 
+                                    content_type="application/xhtml+xml; charset=utf-8")
+
+
 @app.route('/login')
 def login():
     redirect_uri = url_for('auth', _external=True)
