@@ -91,23 +91,61 @@ def kilpailu():
 def joukkueet():
     if not session.get('kirjautunut'):
         return redirect(url_for('login'))
-    
-    joukkueet_stream = [
-    doc.to_dict()
-    for doc in db.collection("joukkueet")
-                .where("omistajat", "==", session['email'])
-                .stream()
-    ]
-    
-    joukkueet = []
-    for joukkue in joukkueet_stream:
-        joukkueet.append((joukkue['nimi'], joukkue['sarja'], sorted(joukkue['jasenet'])))
-    print(joukkueet)
 
+    joukkueet = [
+        doc.to_dict()
+        for doc in db.collection("joukkueet")
+                    .where("omistajat", "array_contains", session["email"])
+                    .stream()
+    ]
+
+    sarjat = {
+        doc.id: doc.to_dict()
+        for doc in db.collection("sarjat").stream()
+    }
+
+    kilpailut = {
+        doc.id: doc.to_dict()
+        for doc in db.collection("kilpailut").stream()
+    }
+
+    tulos = {}
+
+    for joukkue in joukkueet:
+        sarja = sarjat[str(joukkue["sarja"])]
+        kilpailu = kilpailut[str(sarja["kilpailu"])]
+
+        kilpailu_id = str(sarja["kilpailu"])
+
+        # Luodaan kilpailu vain kerran
+        if kilpailu_id not in tulos:
+            tulos[kilpailu_id] = {
+                "nimi": kilpailu["nimi"],
+                "alkuaika": kilpailu["alkuaika"],
+                "sarjat": {}
+            }
+
+        # Luodaan sarja vain kerran
+        if sarja["nimi"] not in tulos[kilpailu_id]["sarjat"]:
+            tulos[kilpailu_id]["sarjat"][sarja["nimi"]] = []
+
+        # Lisätään joukkue
+        tulos[kilpailu_id]["sarjat"][sarja["nimi"]].append({
+            "nimi": joukkue["nimi"],
+            "jasenet": sorted(joukkue["jasenet"])
+        })
+
+    for kilpailu in tulos.values():
+        kilpailu["sarjat"] = dict(
+            sorted(
+                kilpailu["sarjat"].items(),
+                key=lambda x: x[0].lower()
+            )
+        )
     return Response(render_template('omistaja.xhtml', 
                                 omistajan_nimi=session.get('user_name'), 
                                 omistajan_sposti=session.get('email'), 
-                                kilpailut=joukkueet, 
+                                kilpailut=tulos, 
                                 kirjautunut=session.get('kirjautunut')), 
                                 content_type="application/xhtml+xml; charset=utf-8")
 
