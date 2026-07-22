@@ -17,16 +17,16 @@
     <a href="/" aria-current="page">Kilpailut</a>
 
     {% if kirjautunut %}
-    <a href="/kirjaudu_ulos">Kirjaudu ulos</a>
+    <a href="{{ url_for('logout') }}">Kirjaudu ulos</a>
     {% else %}
-    <a href="/kirjaudu">Kirjaudu sisään</a>
+    <a href="{{ url_for('login') }}">Kirjaudu sisään</a>
     {% endif %}
 
 </nav>
 
 <div class="container">
     <table>
-        <caption> kilpailun_nimi </caption>
+        <caption> {{ kilpailun_nimi }} </caption>
         <tbody>
             <tr>
                 <th> Sarja </th>

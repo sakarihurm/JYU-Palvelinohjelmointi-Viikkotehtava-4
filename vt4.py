@@ -56,7 +56,7 @@ def kilpailu():
     sarjat = [
     doc.to_dict()
     for doc in db.collection("sarjat")
-                .where("kilpailu", "==", 6050225628119040)
+                .where("kilpailu", "==", kilpailuid)
                 .stream()
     ]
 
@@ -87,6 +87,32 @@ def kilpailu():
                                     content_type="application/xhtml+xml; charset=utf-8")
 
 
+@app.route('/joukkueet', methods=['POST', 'GET'])
+def joukkueet():
+    if not session.get('kirjautunut'):
+        return redirect(url_for('login'))
+    
+    joukkueet_stream = [
+    doc.to_dict()
+    for doc in db.collection("joukkueet")
+                .where("omistajat", "==", session['email'])
+                .stream()
+    ]
+    
+    joukkueet = []
+    for joukkue in joukkueet_stream:
+        joukkueet.append((joukkue['nimi'], joukkue['sarja'], sorted(joukkue['jasenet'])))
+    print(joukkueet)
+
+    return Response(render_template('omistaja.xhtml', 
+                                omistajan_nimi=session.get('user_name'), 
+                                omistajan_sposti=session.get('email'), 
+                                kilpailut=joukkueet, 
+                                kirjautunut=session.get('kirjautunut')), 
+                                content_type="application/xhtml+xml; charset=utf-8")
+
+
+
 @app.route('/login')
 def login():
     redirect_uri = url_for('auth', _external=True)
@@ -97,8 +123,7 @@ def login():
 def auth():
     token = oauth.google.authorize_access_token()
     session['user'] = token['userinfo']
-    print(session.get('user'))
-    email = session['user']['email']
+    session['email'] = session['user']['email']
     session['user_name'] = session['user']['given_name'] + " " + session['user']['family_name']
     session['kirjautunut'] = True
     return redirect('/')
@@ -107,5 +132,5 @@ def auth():
 @app.route('/logout')
 def logout():
     session.pop('user', None)
-    session['kirjautunut'] = False
+    session.clear()
     return redirect('/')

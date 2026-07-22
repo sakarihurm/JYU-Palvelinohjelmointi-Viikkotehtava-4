@@ -30,7 +30,7 @@
     <div id="labels">
         <ul>
             {% for id, nimi, alkuaika in kilpailut %}
-            <li>{{nimi}} - {{alkuaika}}</li>
+            <li><a href="{{ url_for('kilpailu', id=id, nimi=nimi, alkuaika=alkuaika) }}">{{nimi}}</a> - {{alkuaika}}</li>
             {% endfor %}
         </ul>
     </div>

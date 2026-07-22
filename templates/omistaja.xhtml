@@ -17,9 +17,9 @@
     <a href="/" aria-current="page">Kilpailut</a>
 
     {% if kirjautunut %}
-    <a href="/kirjaudu_ulos">Kirjaudu ulos</a>
+    <a href="{{ url_for('logout') }}">Kirjaudu ulos</a>
     {% else %}
-    <a href="/kirjaudu">Kirjaudu sisään</a>
+    <a href="{{ url_for('login') }}">Kirjaudu sisään</a>
     {% endif %}
 
 </nav>
