@@ -1,5 +1,5 @@
 from flask import Flask, request, Response, render_template, url_for, redirect, session
-import json, hashlib, sqlite3, secrets, firebase_admin
+import firebase_admin
 from firebase_admin import firestore, credentials
 from authlib.integrations.flask_client import OAuth
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -142,6 +142,10 @@ def joukkueet():
                 key=lambda x: x[0].lower()
             )
         )
+    for kilpailu in tulos.values():
+        for joukkueet in kilpailu["sarjat"].values():
+            joukkueet.sort(key=lambda j: j["nimi"].lower())
+
     return Response(render_template('omistaja.xhtml', 
                                 omistajan_nimi=session.get('user_name'), 
                                 omistajan_sposti=session.get('email'), 
@@ -149,7 +153,22 @@ def joukkueet():
                                 kirjautunut=session.get('kirjautunut')), 
                                 content_type="application/xhtml+xml; charset=utf-8")
 
+@app.route('/lisaaJoukkue', methods=['POST', 'GET'])
+def lisaaJoukkue():
+    kilpailun_nimi = request.values.get("kilpailu", "")
+    sarjan_nimi = request.values.get("sarja", "")
+    print(kilpailun_nimi)
+    print(sarjan_nimi)
+    return Response(render_template('muokkaa.xhtml', 
+                            omistajan_nimi=session.get('user_name'),
+                            kilpailun_nimi=kilpailun_nimi,
+                            sarjan_nimi=sarjan_nimi,
+                            kirjautunut=session.get('kirjautunut')), 
+                            content_type="application/xhtml+xml; charset=utf-8")
 
+@app.route('/tallenna', methods=['POST', 'GET'])
+def tallenna():
+    pass
 
 @app.route('/login')
 def login():

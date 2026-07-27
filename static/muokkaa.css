@@ -1,0 +1,55 @@
+.navbar {
+	background-color: #1e95ed;
+	width: 100%%;
+	height: 2em;
+	font-weight: bold;
+	color: white;
+	display: flex;
+  align-items: center;
+}
+a {
+	margin-left: 0.5em;
+  	color: white;
+}
+
+#logout {
+  	margin-left: auto;
+	margin-right: 1em;
+}
+form {
+	margin-left: 5%;
+	margin-top: 2%;
+	display: flex;
+	flex-direction: column;
+	width: 15%;
+}
+label {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 0.5em;
+}
+#sarjat {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 0.5em
+}
+
+#jasenet label{
+	margin-left: 4em;
+}
+#tallenna {
+	text-align: right;
+}
+#submit_painike {
+	background-color: #1494ea;
+	color: white;
+}
+#kilpailun_nimi {
+	color: black;
+}
+.virhe {
+  color: #d32f2f;
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-align: center;
+}

@@ -2,10 +2,11 @@
 <html lang="fi" xmlns="http://www.w3.org/1999/xhtml" xml:lang="fi">
 <head>
 <meta charset="utf-8"/>
-<link rel="StyleSheet" href="{{ url_for('static', filename='joukkueet.css') }}" type="text/css" />
+<link rel="StyleSheet" href="{{ url_for('static', filename='muokkaa.css') }}" type="text/css" />
 <title>TIES4080 - Viikkotehtävä 3 - 2025 kesä</title>
 </head>
 <body>
+
 
 <!-- täydennä lomaketta tarpeen mukaan. Älä kuitenkaan muuta kenttien nimiä -->
 <nav class="navbar">
@@ -24,32 +25,23 @@
 
 </nav>
 
-<p>{{ omistajan_nimi }}</p>
-<p>{{ omistajan_sposti }}</p>
 <div class="container">
-    <ul>
-        {% for kilpailu_id, kilpailu in kilpailut.items() %}
-        <li><a href="{{ url_for('kilpailu', id=kilpailu_id, nimi=kilpailu.nimi, alkuaika=kilpailu.alkuaika) }}">{{ kilpailu.nimi }}</a> {{ kilpailu.alkuaika }}
-            <ul>
-                {% for sarja, joukkueet in kilpailu.sarjat.items() %}
-                <li>{{ sarja }} <a href="{{ url_for('lisaaJoukkue', kilpailu=kilpailu.nimi, sarja=sarja) }}"><button type="button">Lisää joukkue</button></a>
-                    <ul>
-                        {% for joukkue in joukkueet %}
-                        <li>{{ joukkue.nimi }}
-                            <ul>
-                                {% for jasen in joukkue.jasenet %}
-                                <li>{{ jasen }}</li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </li>
-                {% endfor %}
-            </ul>
-        </li>
-        {% endfor %}
-    </ul>
+
+    <form id="muokkaa" action="{{ url_for('tallenna') }}" method="POST">
+        <p> {{kilpailun_nimi}} </p>
+        <p> {{sarjan_nimi}} </p>
+        
+        <label>Nimi<input type="text" name="joukkueen_nimi" value=""/></label>
+        
+        <div id="jasenet">Jäsenet
+            {% for i in range(0, 5) %}
+            <label>Jäsen {{loop.index}}<input type="text" name="jasen" value=""/></label>
+            {% endfor %}
+        </div>
+        <p id="tallenna"><input type="submit" id="submit_painike" name="painike" value="Tallenna" /></p>
+
+    </form>
+
  </div>
 <!-- Tästä eteenpäin on vain apuvälineenä käytettäviä skriptejä -->
 <!-- HTMLinspectoria käytetään sivun live-muutosten validointiin. Kannattaa
@@ -60,3 +52,5 @@ vielä varmuuden vuoksi ajaa välillä myös W3C:n validaattori -->
 <script src="https://appro.mit.jyu.fi/tools/validator/xml-validator.js"></script>
 </body>
 </html>
+
+
