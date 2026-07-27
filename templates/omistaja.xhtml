@@ -32,7 +32,7 @@
         <li><a href="{{ url_for('kilpailu', id=kilpailu_id, nimi=kilpailu.nimi, alkuaika=kilpailu.alkuaika) }}">{{ kilpailu.nimi }}</a> {{ kilpailu.alkuaika }}
             <ul>
                 {% for sarja, joukkueet in kilpailu.sarjat.items() %}
-                <li>{{ sarja }} <a href="{{ url_for('lisaaJoukkue', kilpailu=kilpailu.nimi, sarja=sarja) }}"><button type="button">Lisää joukkue</button></a>
+                <li>{{ sarja }} <a href="{{ url_for('lisaaJoukkue', kilpailu=kilpailu.nimi, kilpailuid=kilpailu_id, sarja=sarja) }}"><button type="button">Lisää joukkue</button></a>
                     <ul>
                         {% for joukkue in joukkueet %}
                         <li>{{ joukkue.nimi }}

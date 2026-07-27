@@ -156,19 +156,78 @@ def joukkueet():
 @app.route('/lisaaJoukkue', methods=['POST', 'GET'])
 def lisaaJoukkue():
     kilpailun_nimi = request.values.get("kilpailu", "")
+    kilpailun_id = request.values.get("kilpailuid", "")
     sarjan_nimi = request.values.get("sarja", "")
-    print(kilpailun_nimi)
-    print(sarjan_nimi)
+    virhe = request.args.get("virhe","")
     return Response(render_template('muokkaa.xhtml', 
                             omistajan_nimi=session.get('user_name'),
                             kilpailun_nimi=kilpailun_nimi,
+                            kilpailuid=kilpailun_id,
                             sarjan_nimi=sarjan_nimi,
-                            kirjautunut=session.get('kirjautunut')), 
+                            virhe=virhe,
+                            kirjautunut=session.get('kirjautunut')),
                             content_type="application/xhtml+xml; charset=utf-8")
 
 @app.route('/tallenna', methods=['POST', 'GET'])
 def tallenna():
-    pass
+    kilpailuid = int(request.values.get("kilpailuid", 0))
+    sarjan_nimi = request.values.get("sarja", "")
+    joukkue = request.form.get("joukkueen_nimi", "").strip()
+    jasenet = request.form.getlist('jasen')
+
+    # Tarkistetaan syötetyt tiedot
+    if tarkistaJoukkue(joukkue) == False:
+        return redirect(url_for('lisaaJoukkue', virhe=session['tallennusvirhe']))
+    if tarkistaJasenet(jasenet) == False:
+        return redirect(url_for('lisaaJoukkue', virhe=session['tallennusvirhe']))
+
+    docs = (
+        db.collection("sarjat")
+        .where("nimi", "==", sarjan_nimi)
+        .where("kilpailu", "==", kilpailuid)
+        .limit(1)
+        .stream()
+    )
+    doc = next(docs, None)
+    if doc:
+        sarja_id = int(doc.id)
+    else:
+        sarja_id = 0
+
+    joukkue = {
+        "nimi": joukkue,
+        "sarja": sarja_id,
+        "jasenet": jasenet,
+        "omistajat": [session["email"]],
+        "tulospalvelu": []
+    }
+
+
+    db.collection("joukkueet").add(joukkue)
+
+    return redirect(url_for('joukkueet'))
+
+
+def tarkistaJoukkue(joukkue):
+    joukkueen_nimi = joukkue.lower().strip()
+    if len(joukkueen_nimi) == 0:
+        session['tallennusvirhe'] = "Virhe: joukkueen nimi ei saa olla tyhjä."
+        return False
+    return True
+    
+def tarkistaJasenet(jasenet):
+    jasenet_sorted = []
+    for jasen in jasenet:
+        jasenet_sorted.append(jasen.lower())
+
+    if len(jasenet_sorted) < 2 or len(jasenet_sorted) > 5: 
+        session['tallennusvirhe'] = "Virhe: jäseniä liian vähän tai liikaa."
+        return False
+    
+    # if len(jasenet_sorted) != len(set(jasenet_sorted)):
+    #     session['tallennusvirhe'] = "Virhe: jäsen on jo olemassa."
+    #     return False
+    return True
 
 @app.route('/login')
 def login():

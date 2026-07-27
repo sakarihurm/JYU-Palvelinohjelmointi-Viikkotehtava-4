@@ -27,7 +27,7 @@
 
 <div class="container">
 
-    <form id="muokkaa" action="{{ url_for('tallenna') }}" method="POST">
+    <form id="muokkaa" action="{{ url_for('tallenna', sarja=sarjan_nimi, kilpailuid=kilpailuid) }}" method="POST">
         <p> {{kilpailun_nimi}} </p>
         <p> {{sarjan_nimi}} </p>
         
@@ -40,6 +40,9 @@
         </div>
         <p id="tallenna"><input type="submit" id="submit_painike" name="painike" value="Tallenna" /></p>
 
+    {% if virhe %}
+    <span class="virhe">{{virhe}}</span>
+    {% endif %}
     </form>
 
  </div>
