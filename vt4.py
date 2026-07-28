@@ -158,28 +158,44 @@ def lisaaJoukkue():
     kilpailun_nimi = request.values.get("kilpailu", "")
     kilpailun_id = request.values.get("kilpailuid", "")
     sarjan_nimi = request.values.get("sarja", "")
-    virhe = request.args.get("virhe","")
     return Response(render_template('muokkaa.xhtml', 
                             omistajan_nimi=session.get('user_name'),
                             kilpailun_nimi=kilpailun_nimi,
                             kilpailuid=kilpailun_id,
                             sarjan_nimi=sarjan_nimi,
-                            virhe=virhe,
+                            virhe="",
                             kirjautunut=session.get('kirjautunut')),
                             content_type="application/xhtml+xml; charset=utf-8")
 
 @app.route('/tallenna', methods=['POST', 'GET'])
 def tallenna():
     kilpailuid = int(request.values.get("kilpailuid", 0))
+    kilpailun_nimi = request.values.get("kilpailun_nimi", "")
     sarjan_nimi = request.values.get("sarja", "")
     joukkue = request.form.get("joukkueen_nimi", "").strip()
     jasenet = request.form.getlist('jasen')
+    
+    jasenet = [j.strip() for j in jasenet if j.strip()]
 
     # Tarkistetaan syötetyt tiedot
     if tarkistaJoukkue(joukkue) == False:
-        return redirect(url_for('lisaaJoukkue', virhe=session['tallennusvirhe']))
+        return Response(render_template('muokkaa.xhtml', 
+                            omistajan_nimi=session.get('user_name'),
+                            kilpailun_nimi=kilpailun_nimi,
+                            kilpailuid=kilpailuid,
+                            sarjan_nimi=sarjan_nimi,
+                            virhe=session['tallennusvirhe'],
+                            kirjautunut=session.get('kirjautunut')),
+                            content_type="application/xhtml+xml; charset=utf-8")
     if tarkistaJasenet(jasenet) == False:
-        return redirect(url_for('lisaaJoukkue', virhe=session['tallennusvirhe']))
+        return Response(render_template('muokkaa.xhtml', 
+                            omistajan_nimi=session.get('user_name'),
+                            kilpailun_nimi=kilpailun_nimi,
+                            kilpailuid=kilpailuid,
+                            sarjan_nimi=sarjan_nimi,
+                            virhe=session['tallennusvirhe'],
+                            kirjautunut=session.get('kirjautunut')),
+                            content_type="application/xhtml+xml; charset=utf-8")
 
     docs = (
         db.collection("sarjat")
@@ -213,6 +229,16 @@ def tarkistaJoukkue(joukkue):
     if len(joukkueen_nimi) == 0:
         session['tallennusvirhe'] = "Virhe: joukkueen nimi ei saa olla tyhjä."
         return False
+
+    joukkueiden_nimet = [
+        doc.to_dict()["nimi"]
+        for doc in db.collection("joukkueet").stream()
+    ]
+
+    for nimi in joukkueiden_nimet:
+        if nimi.strip().lower() == joukkueen_nimi:
+            session['tallennusvirhe'] = "Virhe: joukkue on jo olemassa."
+            return False
     return True
     
 def tarkistaJasenet(jasenet):
@@ -224,9 +250,9 @@ def tarkistaJasenet(jasenet):
         session['tallennusvirhe'] = "Virhe: jäseniä liian vähän tai liikaa."
         return False
     
-    # if len(jasenet_sorted) != len(set(jasenet_sorted)):
-    #     session['tallennusvirhe'] = "Virhe: jäsen on jo olemassa."
-    #     return False
+    if len(jasenet_sorted) != len(set(jasenet_sorted)):
+        session['tallennusvirhe'] = "Virhe: jäsen on jo olemassa."
+        return False
     return True
 
 @app.route('/login')

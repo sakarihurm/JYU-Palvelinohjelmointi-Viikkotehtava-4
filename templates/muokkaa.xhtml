@@ -27,7 +27,7 @@
 
 <div class="container">
 
-    <form id="muokkaa" action="{{ url_for('tallenna', sarja=sarjan_nimi, kilpailuid=kilpailuid) }}" method="POST">
+    <form id="muokkaa" action="{{ url_for('tallenna', sarja=sarjan_nimi, kilpailuid=kilpailuid, kilpailun_nimi=kilpailun_nimi) }}" method="POST">
         <p> {{kilpailun_nimi}} </p>
         <p> {{sarjan_nimi}} </p>
         
@@ -35,7 +35,7 @@
         
         <div id="jasenet">Jäsenet
             {% for i in range(0, 5) %}
-            <label>Jäsen {{loop.index}}<input type="text" name="jasen" value=""/></label>
+            <label>Jäsen {{loop.index}}<input type="text" name="jasen"/></label>
             {% endfor %}
         </div>
         <p id="tallenna"><input type="submit" id="submit_painike" name="painike" value="Tallenna" /></p>
