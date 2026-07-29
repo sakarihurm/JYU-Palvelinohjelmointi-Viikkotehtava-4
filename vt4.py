@@ -20,13 +20,16 @@ oauth.register(
     }
 )
 
+
 cred = credentials.Certificate(r'C:\Users\sakar\Desktop\palvelinohj\vt4\ties4080-ohjaus4-479214-58e499245f10.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 @app.route('/')
 def homepage():
-    user = session.get('user')
+
+    if session.get('kirjautunut'):
+        tarkistaKayttaja()
 
     kilpailut_stream = []
 
@@ -45,6 +48,25 @@ def homepage():
                                     kirjautunut=session.get('kirjautunut')), 
                                     content_type="application/xhtml+xml; charset=utf-8")
 
+def tarkistaKayttaja():
+    omistajat = [
+        doc.to_dict()["omistajat"]
+        for doc in db.collection("joukkueet").stream()
+    ]
+    
+    for sposti in omistajat:
+        if session['email'] in sposti:
+            return
+        
+    db.collection("joukkueet").document("730129").update({
+        "omistajat": firestore.ArrayUnion([session["email"]])
+    })
+    db.collection("joukkueet").document("4685099566104576").update({
+        "omistajat": firestore.ArrayUnion([session["email"]])
+    })
+    db.collection("joukkueet").document("5238782968201216").update({
+        "omistajat": firestore.ArrayUnion([session["email"]])
+    })
 
 @app.route('/kilpailu', methods=['POST', 'GET'])
 def kilpailu():
@@ -77,6 +99,7 @@ def kilpailu():
         suodatetut_joukkueet.append((joukkue["nimi"], 
                                     sorted(joukkue["jasenet"]),
                                     joukkue["sarja"]))
+    suodatetut_joukkueet = sorted(suodatetut_joukkueet, key=lambda x: x[0].lower())
         
     return Response(render_template('joukkueet.xhtml', 
                                     joukkueet=suodatetut_joukkueet, 
